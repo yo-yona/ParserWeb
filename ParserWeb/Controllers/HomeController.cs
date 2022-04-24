@@ -18,10 +18,7 @@ namespace ParserWeb.Controllers
 
         public IActionResult Index()
         {
-            Console.WriteLine(_context.Cashs.ToArray()[0].Site);
-            Console.WriteLine(_context.SiteContents.ToArray()[0].Word);
-            Console.WriteLine(_context.SiteContents.ToArray()[0].Site.Site);
-            return View(_context.SiteContents.ToList());
+            return View(_context.SiteContents.Include(s => s.Site).ToList());
         }
         //[HttpPost]
         public async Task<IActionResult> Result(string site)
@@ -48,10 +45,7 @@ namespace ParserWeb.Controllers
                 var counts = from c in _context.SiteContents
                              select c;
                 counts = counts.Where(c => c.Site.Site.Contains(site));
-            Console.WriteLine(_context.Cashs.ToArray()[0].Site);
-            Console.WriteLine(_context.SiteContents.ToArray()[0].Word);
-            Console.WriteLine(_context.SiteContents.ToArray()[0].Site.Site);
-            return View(counts.OrderByDescending(entry => entry.Count).ToList());
+            return View(counts.OrderByDescending(entry => entry.Count).Include(s => s.Site).ToList());
         }
 
         public IActionResult Privacy()
