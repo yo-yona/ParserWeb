@@ -1,0 +1,17 @@
+﻿@using ParserWeb.Models
+@model IEnumerable<SiteContent>
+@{
+    ViewData["Title"] = "Result Page";
+}
+
+<div class="text-center">
+    <h3 class="display-4">Statistics for <a href=@Model.ToArray()[0].Site.Site>@Model.ToArray()[0].Site.Site</a></h3>
+    <p>accessed on @Model.ToArray()[0].Site.Date </p>
+</div>
+
+<table class="table">
+    @foreach (SiteContent c in Model)
+    {
+        <tr><td>@c.Word</td><td>@c.Count</td></tr>
+    }
+</table>
