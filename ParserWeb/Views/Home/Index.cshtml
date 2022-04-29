@@ -12,8 +12,9 @@
 </form>
 
 <table class="table">
+    <tr><td>Date</td><td>Site</td><td>Count</td><td>Word</td></tr>
     @foreach (SiteContent c in Model)
     {
-            <tr> <td>@c.Site.Date</td> <td>@c.Site.Site</td> <td>@c.Word</td> <td>@c.Count</td> </tr>
+            <tr><td>@c.Site.Date</td><td>@c.Site.Site</td><td>@c.Count</td><td>@c.Word</td></tr>
     }
 </table>

@@ -13,13 +13,13 @@ namespace ParserWeb.Models
             Cash c1 = new Cash
             {
                 Site = "vk.com",
-                Date = DateTime.Parse("1984-3-13"),
+                Date = DateTime.Parse("2022-3-13"),
             };
 
             Cash c2 = new Cash
             {
                 Site = "Ghostbusters.ru",
-                Date = DateTime.Parse("1959-4-15"),
+                Date = DateTime.Parse("2022-4-15"),
             };
             using (var context = new ParserContext(
                 serviceProvider.GetRequiredService<
@@ -45,7 +45,7 @@ namespace ParserWeb.Models
                     new SiteContent
                     {
                         Site = c1,
-                        Word = "vk",
+                        Word = "friend",
                         Count = 1
                     },
                     new SiteContent
