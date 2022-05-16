@@ -16,17 +16,17 @@ namespace ParserWeb
         /// Если слово есть, увеличиваем счетчик, иначе добавляем в статистику
         private void SafeCountIncrement(string word)
         {
-            if (word.All(c => Char.IsLetter(c)))
-            {
-                if (wordStatistics.ContainsKey(word))
+                if (word.All(c => Char.IsLetter(c)))
                 {
-                    wordStatistics[word]++;
+                    if (wordStatistics.ContainsKey(word))
+                    {
+                        wordStatistics[word]++;
+                    }
+                    else
+                    {
+                        wordStatistics.Add(word, 1);
+                    }
                 }
-                else
-                {
-                    wordStatistics.Add(word, 1);
-                }
-            }
         }
 
         /// Делим текст на слова, разделяемые специальными знаками metaChar

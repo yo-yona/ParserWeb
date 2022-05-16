@@ -30,7 +30,7 @@ namespace ParserWeb.Controllers
             if (fromDB == null && !string.IsNullOrEmpty(site))
             {
                 WebAgent webConnection = new WebAgent(site);
-                results = webConnection.PrintStatistics();
+                results = await webConnection.PrintStatistics();
                 Cash new_entry_cash = new Cash { Date = DateTime.Now, Site = site };
                 _context.Cashs.Add(new_entry_cash);
                 Console.WriteLine(_context.Cashs.ToArray()[0].Site);

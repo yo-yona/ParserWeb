@@ -6,18 +6,25 @@ namespace ParserWeb
     /// Взаимодействие с веб-страницей. Вся функциональность тут
     class WebAgent
     {
-        private WordsCounter wordsCounter { get; set; }
+        private WordsCounter? wordsCounter { get; set; }
         private string site { get; }
-        private string content { get; }
+        private string content { get; set; }
+        private WebClient client { get; }
+        private object? locker { get; }
 
         /// Сразу избавляемся от всего не предназначенного для пользователя и остаток передаем на подсчет статистики слов
         public WebAgent(string path)
         {
+            locker = new object();
             site = path;
-            using var client = new WebClient();
+            client = new WebClient();
             client.Headers.Add("User-Agent", "C# parsing program");
-            content = client.DownloadString(site);
-            content = DropInternalsOf(content, "script", "style");
+        }
+
+        private async Task GetContent()
+        {
+            content = client.DownloadStringTaskAsync(site).Result;
+            content = await DropInternalsOf(content, true, "script", "style");
             content = StripHTML(content);
         }
 
@@ -29,21 +36,31 @@ namespace ParserWeb
         }
 
         /// Избавляется от указанных тэгов и их содержимых
-        private string DropInternalsOf(string HTMLText, params string[] TagNames)
+        private async Task<string> DropInternalsOf(string HTMLText, bool removeAllTags, params string[] TagNames)
         {
+            List<Task> localPool = new List<Task>();
             foreach (var TagName in TagNames)
             {
-                Regex reg = new Regex($@"(?<=^|\s)<{TagName}.*>[\S\s]+?</{TagName}>(?=\s|$)", RegexOptions.IgnoreCase);
-                HTMLText = reg.Replace(HTMLText, "");
+                localPool.Add(Task.Run(() =>
+                {
+                    Regex reg = new Regex($@"(?<=^|\s)<{TagName}.*>[\S\s]+?</{TagName}>(?=\s|$)", RegexOptions.IgnoreCase);
+                    lock (locker)
+                    {
+                        HTMLText = reg.Replace(HTMLText, "");
+                    }
+                }));
             }
+            await Task.WhenAll(localPool);
             return HTMLText;
         }
 
         /// Подсчет статистики
-        public Dictionary<string, uint> PrintStatistics()
+        public async Task<Dictionary<string, uint>> PrintStatistics()
         {
+            await GetContent();
             wordsCounter = new WordsCounter();
-            return wordsCounter.PrintWordsCounts(site, content);
+            Task<Dictionary<string, uint>> task = Task.Run(() => wordsCounter.PrintWordsCounts(site, content));
+            return task.Result;
         }
     }
 }
